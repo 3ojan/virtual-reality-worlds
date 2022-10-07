@@ -42,6 +42,12 @@ function UpdateModal(props) {
       console.log(response.data);
     })
   };
+
+  const onNewWorld = () => {
+    axios.post('/post/worlds/newWorld', { worldId: localItem.id }).then((response) => {
+      console.log(response.data);
+    })
+  };
   const onCancel = () => {
     props.onCancel && props.onCancel()
   }
@@ -76,6 +82,7 @@ function UpdateModal(props) {
       </div>
       <button type="button" onClick={onDuplicate} className="btn btn-secondary" data-dismiss="modal">Duplicate</button>
       <button type="button" onClick={onGetWorldData} className="btn btn-secondary" data-dismiss="modal">getWorldData</button>
+      <button type="button" onClick={onNewWorld} className="btn btn-secondary" data-dismiss="modal">create new world</button>
     </div>
   );
 }

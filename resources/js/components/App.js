@@ -8,7 +8,6 @@ function App() {
     <div className="container">
       {/* components goes here */}
       <WorldsList />
-      test
     </div>
   );
 }

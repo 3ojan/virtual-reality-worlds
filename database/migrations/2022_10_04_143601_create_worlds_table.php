@@ -22,12 +22,12 @@ class CreateWorldsTable extends Migration
             $table->string('previewBackgroundImagePath')->nullable();
             $table->boolean('publicAvailable');
             $table->boolean('lockedForEditing')->nullable();
-            $table->string('socialMediaPreviewImagePath')->nullable();
-            $table->string('description')->nullable();
-            $table->bigInteger('countRooms');
-            $table->string('lat')->nullable();
-            $table->string('lng')->nullable();
-            $table->boolean('isDraft');
+            $table->string('socialMediaPreviewImagePath')->nullable()->default("");
+            $table->string('description')->nullable()->default("");
+            $table->bigInteger('countRooms')->default(1);
+            $table->string('lat')->nullable()->default("");
+            $table->string('lng')->nullable()->default("");
+            $table->boolean('isDraft')->default(0);
             $table->timestamps();
         });
     }

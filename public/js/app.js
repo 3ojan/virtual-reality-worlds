@@ -5383,11 +5383,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
 function App() {
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
     className: "container",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_WorldsList__WEBPACK_IMPORTED_MODULE_2__["default"], {}), "test"]
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_WorldsList__WEBPACK_IMPORTED_MODULE_2__["default"], {})
   });
 }
 
@@ -5606,6 +5605,14 @@ function UpdateModal(props) {
     });
   };
 
+  var onNewWorld = function onNewWorld() {
+    axios__WEBPACK_IMPORTED_MODULE_2___default().post('/post/worlds/newWorld', {
+      worldId: localItem.id
+    }).then(function (response) {
+      console.log(response.data);
+    });
+  };
+
   var onCancel = function onCancel() {
     props.onCancel && props.onCancel();
   };
@@ -5690,6 +5697,12 @@ function UpdateModal(props) {
       className: "btn btn-secondary",
       "data-dismiss": "modal",
       children: "getWorldData"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+      type: "button",
+      onClick: onNewWorld,
+      className: "btn btn-secondary",
+      "data-dismiss": "modal",
+      children: "create new world"
     })]
   });
 }

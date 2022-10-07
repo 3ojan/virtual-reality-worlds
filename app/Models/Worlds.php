@@ -10,6 +10,21 @@ class Worlds extends Model
     use HasFactory;
 
     protected $fillable = [
-        'data'
+        'data',
+        'previewBackgroundImagePath',
+        'publicAvailable',
+        'lockedForEditing',
+        'name'
+    ];
+
+    ///default values
+    protected $attributes = [
+        'socialMediaPreviewImagePath' => "",
+        'description' => "",
+        'countRooms' => 0,
+        'isDraft' => 0,
+        'creator' => 1,
+        'lat' => "",
+        'lng' => "",
     ];
 }

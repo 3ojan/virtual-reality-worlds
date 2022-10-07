@@ -33,4 +33,5 @@ Route::post('/update/worlds/duplicate', [App\Http\Controllers\WorldsController::
 
 Route::post('/get/worlds/getWorldData', [App\Http\Controllers\WorldsController::class, 'getWorldData']);
 
+Route::post('/post/worlds/newWorld', [App\Http\Controllers\WorldsController::class, 'newWorld']);
 

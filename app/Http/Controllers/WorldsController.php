@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Worlds;
+use App\Helpers\Uuidhelper;
 use App\Models\User;
 use Auth;
 use Log;
@@ -84,18 +85,12 @@ class WorldsController extends Controller
             $id = $request->get("worldId");
             $sourceWorld = Worlds::findOrFail($id);
 
-            ///TODO :: find how to get user ID
-
-            // $userId = Auth::user()->id;
-            // dd($sourceWorld);
-            // $user = Auth::user();
-            // print($user->id);
-
+            $userId = $request->user();
             $model =$sourceWorld->replicate();
             $sourceWorld->created_at = Carbon::now();
             $model->name = 'Copy of ' . $sourceWorld->name;
             $model->description = $sourceWorld->description;
-            $model->creator = 1;
+            $model->creator = $userId;
             $model->data = $sourceWorld->data;
             $model->save();
             
@@ -114,7 +109,34 @@ class WorldsController extends Controller
             $sourceWorld = Worlds::findOrFail($id); 
             return response()->json([
                 "data"=>$sourceWorld->data
+           ]);
+        }
+        catch(Exception $e)
+        {
+            Log::error($e);
+        }
+    }
+    public function newWorld(Request $request){
+        try{
+            $userId = $request->user();
+            $uuid = UuidHelper::generate();
+            Log::info("Logging one variable: " . $userId);
+            $model = new Worlds([
+            "name" => 'New world',
+            "description" => '',
+            "is_draft" => 0,
+            "creator" => $userId,
+            "previewBackgroundImagePath" => "",
+            "data" => '{"version": 3,"scenes": [{"id": "'.$uuid.'","name": "Default scene","publicName": "Default scene","startPositionX": null,"startPositionY": null,"background": {"type": "image","mediumPath": "virtualRealityFiles/dreamstime.jpg","sliceImage": true},"objects": [],"ambientAudio": {"type": "audio"},"introAudio": {"type": "audio"},"sceneRotationY": 0,
+			"backgroundRotationX": 0,"backgroundRotationY": 0,"backgroundRotationZ": 0,"autorotateAfterSeconds": 0,"autorotateSpeed": 0.1,"actionIfBackgroundVideoEnds": "stop","goToSceneIdAfterBackgroundVideoEnds": "","weather": null, "publicStage": false}],"rules": {"visibleIf": {},"hiddenIf": {}},"copyrightLogo": {},"previewBackgroundImage": {"type": "image","mediumPath": "virtualRealityFiles/dreamstime_thumb.jpg","transparent": false},"socialMediaPreviewImage": {},"worldAmbientAudio": {},"customIcons": {},"elementTypeIconAssignments": {},"name": "Default world","description": "","creatorUserIdOfWorld": "'.$userId.'","publicAvailable": 1,"is_draft": 1}',
+            "publicAvailable" => 0,
+            "lockedForEditing" => 0,
             ]);
+            $model->save();
+            
+           return response()->json([
+            "success"=>true
+           ]);
         }
         catch(Exception $e)
         {
