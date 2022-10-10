@@ -7,7 +7,8 @@
         "watch-poll": "mix watch -- --watch-options-poll=1000",
         "hot": "mix watch --hot",
         "prod": "npm run production",
-        "production": "mix --production"
+        "production": "mix --production",
+        "build": "GENERATE_SOURCEMAP=false react-scripts build"
     },
     "devDependencies": {
         "@babel/preset-react": "^7.13.13",
@@ -22,5 +23,8 @@
         "resolve-url-loader": "^5.0.0",
         "sass": "^1.32.11",
         "sass-loader": "^11.0.1"
+    },
+    "dependencies": {
+        "three": "^0.145.0"
     }
 }

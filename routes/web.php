@@ -17,10 +17,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+Route::get('/test', function () {
+    return view('test', ['name' => 'James']);
+    // return '<div></div>';
+});
+
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
 Route::get('/get/worlds/list', [App\Http\Controllers\WorldsController::class, 'getWorlds'])->name('worlds.list');
