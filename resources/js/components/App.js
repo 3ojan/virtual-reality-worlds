@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import WorldsList from './WorldsList';
-import Update from './Update';
 
 function App() {
   return (

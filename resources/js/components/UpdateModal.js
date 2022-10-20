@@ -10,6 +10,7 @@ function UpdateModal(props) {
 
   const { item } = props;
   const [localItem, setLocalItem] = useState({ ...item });
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const { id } = item.id;
@@ -48,6 +49,18 @@ function UpdateModal(props) {
       console.log(response.data);
     })
   };
+
+  const onUploadImage = (event) => {
+    const data = new FormData()
+    data.append('image', selectedImage)
+    axios.post('/store-image', data).then((response) => {
+      console.log(response.data);
+      console.log(localItem);
+      window.localItem = localItem;
+    })
+    event.preventDefault();
+  };
+
   const onCancel = () => {
     props.onCancel && props.onCancel()
   }
@@ -73,6 +86,32 @@ function UpdateModal(props) {
             <div>{localItem.id}</div>
             <div>{localItem.publicAvailable}</div>
             <div>{localItem.previewBackgroundImagePath}</div>
+          </div>
+          <div>
+            <div class="container">
+              {/* image upload */}
+              <form onSubmit={onUploadImage}>
+                <div className="image">
+                  {selectedImage && (
+                    <div>
+                      <img alt="not fount" width={"250px"} src={URL.createObjectURL(selectedImage)} />
+                      <br />
+                      <button onClick={() => setSelectedImage(null)}>Remove</button>
+                    </div>
+                  )}
+                  <p>Add image</p>
+                  <input type="file" class="form-control" required name="image"
+                    onChange={(event) => {
+                      console.log(event.target.files[0]);
+                      setSelectedImage(event.target.files[0]);
+                    }} />
+                </div>
+                <div class="post_button">
+                  <button type="submit" class="btn btn-success" >Add</button>
+                </div>
+              </form>
+              {/* image upload */}
+            </div>
           </div>
           <div className="modal-footer">
             <button type="button" onClick={onSend} className="btn btn-primary">Save changes</button>

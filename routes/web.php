@@ -17,14 +17,27 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
 Auth::routes();
 
-
+/////test routes
+Route::get('/one-world', function () {
+   return view('one-world');
+});
 Route::get('/test', function () {
     return view('test', ['name' => 'James']);
     // return '<div></div>';
 });
+Route::get('/testHome', function () {
+   return view('testHome');
+});
+Route::get('/threejs', function () {
+   return view('threejs');
+});
+Route::get('/playground', function () {
+   return view('playground');
+});
+
+/////test routess
 
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -42,3 +55,15 @@ Route::post('/get/worlds/getWorldData', [App\Http\Controllers\WorldsController::
 
 Route::post('/post/worlds/newWorld', [App\Http\Controllers\WorldsController::class, 'newWorld']);
 
+///temp
+Route::post('/post/worlds/{worldId}/deleteWorld', [App\Http\Controllers\WorldsController::class, 'deleteWorld']);
+
+
+///images
+//For adding an image
+Route::get('/add-image',[App\Http\Controllers\ImageUploadController::class,'addImage'])->name('images.add');
+//For storing an image
+Route::post('/store-image',[App\Http\Controllers\ImageUploadController::class,'storeImage']);
+//For showing an image
+Route::get('/view-images',[App\Http\Controllers\ImageUploadController::class,'viewImages'])->name('images.view');
+///images

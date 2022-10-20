@@ -15,6 +15,20 @@
                     @endif
 
                     {{ __('You are logged in!') }}
+                    <ul>
+                        <li>
+                            <a href="/testHome">Test Route with init app</a>
+                        </li>
+                        <li>
+                            <a href="/threejs">ThreeJS APP</a>
+                        </li>
+                        <li>
+                            <a href="/playground">Modal Playground</a>
+                        </li>
+                        <li>
+                            <a href="/one-world">one World app</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

@@ -1,56 +1,66 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import ViewGL from './ViewGL';
+import { setRadius } from '../../redux/user/sphere';
+import { loadWorldData } from '../../redux/world/world';
+import { ThreeJSValuesProvider } from '../../context/thingsContext';
+import ViewGLClass from './ViewGLClass';
 
 let viewGL;
 export default function Scene() {
 
-  // ******************* COMPONENT LIFECYCLE ******************* //
-  // componentDidMount() {
-  //   debugger;
-  //   // Get canvas, pass to custom class
-  //   const canvas = this.canvasRef.current;
-  //   this.viewGL = new ViewGL(canvas);
+  const dispatch = useDispatch();
+  const { user } = useSelector(state => state.user);
+  const { sphere } = useSelector(state => { return state });
+  const { world } = useSelector(state => { return state });
 
-  //   // Init any event listeners
-  //   window.addEventListener('mousemove', this.mouseMove);
-  //   window.addEventListener('resize', this.handleResize);
-  // }
+  ///local state
+  const [userState, setuserState] = useState(null);
+  const [worldState, setWorldState] = useState(null);
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   // Pass updated props to 
-  //   const newValue = this.props.whateverProperty;
-  //   this.viewGL.updateValue(newValue);
-  // }
+  const scene3DReference = React.useRef({})
 
-  // componentWillUnmount() {
-  //   // Remove any event listeners
-  //   window.removeEventListener('mousemove', this.mouseMove);
-  //   window.removeEventListener('resize', this.handleResize);
-  // }
+  ////example of use
+  // useEffect(() => {
+  //   if (!userState) {
+  //     dispatch(login({ "user-111": "a" }));
+  //   }
+  //   if (user != userState) {
+  //     setuserState(user);
+  //   }
+  // }, [user]);
 
-  // ******************* EVENT LISTENERS ******************* //
-  // mouseMove = (event) => {
-  //   this.viewGL.onMouseMove();
-  // };
-
-  // handleResize = () => {
-  //   this.viewGL.onWindowResize(window.innerWidth, window.innerHeight);
-  // };
-  const canvas = React.useRef();
   const viewGlRef = React.useRef();
+  const [stateSphere, setStateSphere] = useState(sphere);
 
-  const [viewGl, setviewGl] = useState(null)
   useEffect(() => {
-    const context = canvas.current.getContext('2d');
-    // debugger;b
-    // draw(context);
-    setviewGl(true)
+    setStateSphere(sphere);
+    ///load world
+    dispatch(loadWorldData())
+    if (!world.data) {
+    }
+  }, []);
 
-  });
+  useEffect(() => {
+    setWorldState(world.data);
+    scene3DReference.current.setWorldData(world.data);
+
+
+  }, [world.data]);
+
+  useEffect(() => {
+    setStateSphere(sphere);
+  }, [sphere]);
+
   return (
     <>
-      <canvas ref={canvas} height={100} width={100} />
-      {viewGl && <ViewGL canvasRef={canvas} ></ViewGL>}
+      <ThreeJSValuesProvider value={stateSphere}>
+        <div ref={viewGlRef}>
+          {/* {<ViewGL ></ViewGL>} */}
+        </div>
+      </ThreeJSValuesProvider>
+      {/* <InfoContainer></InfoContainer> */}
+      <ViewGLClass myRef={scene3DReference}></ViewGLClass>
     </>
   );
 }

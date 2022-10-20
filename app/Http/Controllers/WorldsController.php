@@ -28,7 +28,7 @@ class WorldsController extends Controller
     public function getWorldDetails(Request $request){
         try{
            $world = Worlds::findOrFail($request->get("worldId"));
-           return response()->json($world);
+        //    return response()->json($world);
         }
         catch(Exception $e)
         {
@@ -38,9 +38,10 @@ class WorldsController extends Controller
     /// update individual world
     public function updateWorldData(Request $request){
         try{
+            error_log($request);
             $id = $request->get("worldId");
-            $payload = $request->get("data");
-            $name =  $payload["name"];
+            $payload = $request->get("items");
+            // $name =  $payload["name"];
             $data = $payload["data"];
 
             $sceneData = $payload["data"];
@@ -49,11 +50,12 @@ class WorldsController extends Controller
 
            $world = Worlds::findOrFail($request->get("worldId"));
            Worlds::where('id', $id)->update([
-            'name'=> $name
+            // 'name'=> $name,
+            'data'=> $data
            ]);
            return response()->json([
             'id'=>$id,
-            'name'=>$name
+            // 'name'=>$name
            ]);
         }
         catch(Exception $e)
@@ -104,6 +106,7 @@ class WorldsController extends Controller
         }
     }
     public function getWorldData(Request $request){
+        error_log("request".$request);
         try{
             $id = $request->get("worldId");
             $sourceWorld = Worlds::findOrFail($id); 
@@ -134,6 +137,19 @@ class WorldsController extends Controller
             ]);
             $model->save();
             
+           return response()->json([
+            "success"=>true
+           ]);
+        }
+        catch(Exception $e)
+        {
+            Log::error($e);
+        }
+    }
+        public function deleteWorld($worldId){
+        try{
+            $sourceWorld = Worlds::findOrFail($worldId);
+            $sourceWorld->delete();
            return response()->json([
             "success"=>true
            ]);
