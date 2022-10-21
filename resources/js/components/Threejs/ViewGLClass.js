@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 // import * as THREE from "three";
-import { CSS3DRenderer } from 'three-css3drenderer';
+import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
-import { TextureLoader, WebGLRenderer, Group, Scene, Raycaster, PerspectiveCamera, SphereGeometry, MeshBasicMaterial, Mesh, PlaneGeometry, RepeatWrapping, Vector3, BackSide, LoadingManager, ShaderMaterial, Audio, AudioListener, AudioLoader, Object3D, BoxGeometry, Euler } from 'three';
+import { CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
+import { TextureLoader, Color, WebGLRenderer, Group, Scene, Raycaster, PerspectiveCamera, SphereGeometry, MeshBasicMaterial, Mesh, PlaneGeometry, RepeatWrapping, Vector3, BackSide, LoadingManager, ShaderMaterial, Audio, AudioListener, AudioLoader, Object3D, BoxGeometry, Euler } from 'three';
 import { VRProfileHelper } from './engine/VRProfileHelper';
 import { VRChairObject } from './engine/VRChairObject';
+import { VRPlaceObject } from './engine/VRPlaceObject';
 import { getStringifiedWorldData, updateJSON, _ray_tracing, cloneObject } from './engine/helpers/scene';
+import { getTexture } from './engine/helpers/texturesAndGeometries';
 
 export default class ViewGLClass extends React.Component {
 
@@ -28,7 +31,7 @@ export default class ViewGLClass extends React.Component {
   }
   initWorld = () => {
     const { scenes } = this.worldData;
-    let currentScene = { ...scenes[0] };
+    let currentScene = { ...scenes[2] };
 
     const updateSphereTexture = (newBgImage) => {
       newBgImage.wrapS = RepeatWrapping;
@@ -44,12 +47,15 @@ export default class ViewGLClass extends React.Component {
     });
     mesh = new Mesh(geometry, material);
 
+    this.textureLoader = new TextureLoader();
     this.textureLoaderSilent = new TextureLoader();
     this.textureLoaderSilent.load(currentScene.background.mediumPath, (texture) => {
       updateSphereTexture(texture);
     });
 
     const scene = new Scene();
+    const interactionGroup = new Group();
+    scene.add(interactionGroup);
     const raycaster = new Raycaster();
     const camera = new PerspectiveCamera(70, 2, 0.001, 10000);
     camera.position.set(0, 0, .0001);
@@ -62,14 +68,15 @@ export default class ViewGLClass extends React.Component {
     canvas.style.height = "100%";
 
     scene.add(mesh)
-
+    window.scene = scene;
 
     ///rednderer    
     renderer.setClearColor("#0000");
     canvas.current = renderer.domElement;
     this.myRef.current.appendChild(canvas.current);
     this.css3DRenderer = new CSS3DRenderer();
-    this.myRef.current.appendChild(this.css3DRenderer.domElement);
+    this.css3DContainerRef.current.appendChild(this.css3DRenderer.domElement);
+    const css3dre = this.css3DRenderer;
     ///rednderer    
 
     function resizeRendererToDisplaySize(renderer) {
@@ -79,6 +86,7 @@ export default class ViewGLClass extends React.Component {
       const needResize = canvas.width !== width || canvas.height !== height;
       if (needResize) {
         renderer.setSize(width, height, false);
+        css3dre.setSize(width, height, false);
       }
       return needResize;
     }
@@ -86,6 +94,7 @@ export default class ViewGLClass extends React.Component {
     function render(time) {
       const fps = 1 / 60;
       time += fps;
+      css3dre.render(scene, camera);
       renderer.render(scene, camera);
       if (resizeRendererToDisplaySize(renderer)) {
         const canvas = renderer.domElement;
@@ -100,7 +109,7 @@ export default class ViewGLClass extends React.Component {
 
 
     ///Controls
-    const controls = new OrbitControls(camera, this.myRef.current);
+    const controls = new OrbitControls(camera, this.css3DContainerRef.current);
     // controls.enabled = false;
     controls.enableDamping = true;
     controls.dampingFactor = this.isMobile ? 0.15 : 0.25;
@@ -110,19 +119,26 @@ export default class ViewGLClass extends React.Component {
 
     controls.rotateSpeed *= -1;
 
-
     const _addElementsToScene = (objects) => {
-      objects.forEach(item => {
+      objects.forEach((item, index) => {
+        console.log(item)
+        if (item.type === "chessGame")
+          return
         const { id, x, y, z } = item;
-        if (item.type === "sceneChange" || item.type === "guestSeat") {
-          let obj = new VRChairObject(0, camera, mesh.material.map, null);
+        let obj;
+        obj = new VRPlaceObject(index, item, getTexture(item.type), null);
+        if (item.type === "youtube") {
+          interactionGroup.add(obj)
+        } else {
           scene.add(obj);
-          obj.setPosition(x, y, z);
-          obj.setAxisRotations();
-          obj.setId(id);
-          obj.showOrUpdateMood(2)
-          return item;
         }
+        obj.mesh.lookAt(camera.position);
+        obj.withStaticRotations && obj.setInitRotations(true);
+        obj.setDistance && obj.setDistance(item.distance);
+        obj.setPosition && obj.setPosition(x, y, z);
+        // obj.setAxisRotations();
+        // obj.setId(id);
+        // obj.showOrUpdateMood(2)
       })
     }
     _addElementsToScene(currentScene.objects);
@@ -192,9 +208,8 @@ export default class ViewGLClass extends React.Component {
       });
     }
     _editModeControls();
-
-
   }
+
   componentDidMount() {
     console.log(this.css3DContainerRef)
     console.log(this.myRef)
@@ -202,9 +217,13 @@ export default class ViewGLClass extends React.Component {
 
 
   render() {
-    return <div>
-      <div className="" ref={this.css3DContainerRef} />
-      <div className="" ref={this.myRef} />
-    </div>
+    return (
+      <div>
+        <div className="" ref={this.css3DContainerRef} />
+        <div style={{ width: "100%", height: "100%" }}>
+          <div className="" ref={this.myRef} />
+        </div>
+      </div >
+    )
   }
 }

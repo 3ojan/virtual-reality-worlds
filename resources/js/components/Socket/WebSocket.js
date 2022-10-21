@@ -238,9 +238,6 @@ export default ({ children }) => {
     })
 
     socket.on('connect', () => {
-      setInterval(() => {
-        onSendMessage(Math.random(), 111, "room")
-      }, 6000)
       console.log('connect', socket.id);
       // this.model.dispatchEvent({ type: SOCKET_EVENTS.SOCKET_CONNECT_SUCCESS });
       // this.initialised = true;

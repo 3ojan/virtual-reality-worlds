@@ -25,7 +25,7 @@ import { Mesh } from 'three';
 
 import { VRProfileHelper } from './VRProfileHelper';
 
-import { GLOBAL_EVENTS } from '../../constants/global';
+// import { GLOBAL_EVENTS } from '../../constants/global';
 import { textureLoader, chairCircleGeometry } from './helpers/texturesAndGeometries';
 
 
@@ -45,7 +45,8 @@ class VRProfileObject extends VRProfileHelper {
         this.name = 'profile';
         this.add(this.mesh);
 
-        this.camera !== null ? this._setInitialPosRot() : this.setPosition(x, y, z);
+        // this.camera !== null ? this._setInitialPosRot() : this.setPosition(x, y, z);
+        this.setPosition(x, y, z);
 
         this.mesh.groupDetails = { title: this.model.languageObject['profile'].text, icon: 'person', editTitle: this.model.languageObject['edit-profile'].text, dataLang: 'edit-profile' }
 
@@ -63,52 +64,52 @@ class VRProfileObject extends VRProfileHelper {
         if (this.model.editMode)
             return;
 
-        this.model.addEventListener(GLOBAL_EVENTS.SESSION_DISCONNECTED, (data) => {
-            if (data.id === this.dbConfig.profile.userId) {
-                this.ownerOffline();
-            }
-        });
+        // this.model.addEventListener(GLOBAL_EVENTS.SESSION_DISCONNECTED, (data) => {
+        //     if (data.id === this.dbConfig.profile.userId) {
+        //         this.ownerOffline();
+        //     }
+        // });
 
-        this.model.addEventListener(GLOBAL_EVENTS.OWNER_STATUS, (e) => {
-            e.data ? this.ownerOnline(e.data) : this.ownerOffline();
-        });
+        // this.model.addEventListener(GLOBAL_EVENTS.OWNER_STATUS, (e) => {
+        //     e.data ? this.ownerOnline(e.data) : this.ownerOffline();
+        // });
 
-        this.model.addEventListener(GLOBAL_EVENTS.MOOD_CHANGED, (e) => {
-            const { senderId, data } = e.data;
+        // this.model.addEventListener(GLOBAL_EVENTS.MOOD_CHANGED, (e) => {
+        //     const { senderId, data } = e.data;
 
-            if (this.userId !== null) {
-                if (this.userId === senderId) {
-                    this.showOrUpdateMood(data.newMood);
-                }
-            }
-        });
+        //     if (this.userId !== null) {
+        //         if (this.userId === senderId) {
+        //             this.showOrUpdateMood(data.newMood);
+        //         }
+        //     }
+        // });
 
-        this.model.addEventListener(GLOBAL_EVENTS.SESSION_CONNECTED, (e) => {
-            if (this.userId !== null) {
-                if (this.userId === e.data.userId) {
-                    this.ownerOnline(e.data);
-                }
-            }
-        });
+        // this.model.addEventListener(GLOBAL_EVENTS.SESSION_CONNECTED, (e) => {
+        //     if (this.userId !== null) {
+        //         if (this.userId === e.data.userId) {
+        //             this.ownerOnline(e.data);
+        //         }
+        //     }
+        // });
 
-        this.model.addEventListener(GLOBAL_EVENTS.AVATAR_CHANGED, (e) => {
-            const { senderId, data } = e.data;
+        // this.model.addEventListener(GLOBAL_EVENTS.AVATAR_CHANGED, (e) => {
+        //     const { senderId, data } = e.data;
 
-            if (this.userId !== null) {
-                if (this.userId === senderId) {
-                    if (!this.dbConfig.profile.hasOwnProperty('dynamicProfileAvatar')) {
-                        textureLoader.load(data.userAvatarUrl, (texture) => {
-                            this.material.map = texture;
-                        });
-                        return;
-                    }
+        //     if (this.userId !== null) {
+        //         if (this.userId === senderId) {
+        //             if (!this.dbConfig.profile.hasOwnProperty('dynamicProfileAvatar')) {
+        //                 textureLoader.load(data.userAvatarUrl, (texture) => {
+        //                     this.material.map = texture;
+        //                 });
+        //                 return;
+        //             }
 
-                    this.dbConfig.profile.dynamicProfileAvatar && textureLoader.load(data.userAvatarUrl, (texture) => {
-                        this.material.map = texture;
-                    });
-                }
-            }
-        });
+        //             this.dbConfig.profile.dynamicProfileAvatar && textureLoader.load(data.userAvatarUrl, (texture) => {
+        //                 this.material.map = texture;
+        //             });
+        //         }
+        //     }
+        // });
 
     }
 

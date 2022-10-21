@@ -5,7 +5,7 @@ import {
     DoubleSide
 } from 'three';
 
-import { SCENE_INTERACTION } from '../../constants/scene';
+// import { SCENE_INTERACTION } from '../../constants/scene';
 import { VRObject3D } from './VRObject3D';
 
 import { textureLoader, textureToggleGeometry, sceneChangeGeometry, lockedTexture, menuPositionCircleGeometry, emptyTexture } from './helpers/texturesAndGeometries';
@@ -28,11 +28,12 @@ class VRSceneChangeObject extends VRObject3D {
         this.name = 'sceneChange';
 
         // INIT
-        this.camera !== null ? this._setInitialPosRot() : this.setPosition(x, y, z);
+        // this.camera !== null ? this._setInitialPosRot() : this.setPosition(x, y, z);
+        this.setPosition(x, y, z);
 
         this.add(this.mesh);
 
-        this.mesh.groupDetails = { title: this.model.languageObject['scene-change'].text, icon: 'meeting_room', editTitle: this.model.languageObject['edit-scene-change'].text, dataLang: 'edit-scene-change' }
+        // this.mesh.groupDetails = { title: this.model.languageObject['scene-change'].text, icon: 'meeting_room', editTitle: this.model.languageObject['edit-scene-change'].text, dataLang: 'edit-scene-change' }
 
         this.addElement('locakbleMesh', textureToggleGeometry, lockedTexture, 'lockable', 17, 17, 10);
 
@@ -41,39 +42,39 @@ class VRSceneChangeObject extends VRObject3D {
         this.currentUser = null;
 
 
-        model.addEventListener(SCENE_INTERACTION.JUMP_TO_OBJECT, (e) => {
-            if (e.data.sceneId === this.targetRoomId) {
-                const data = {
-                    element: this.mesh,
-                    onComplete: e.data.onComplete ? e.data.onComplete : null,
-                };
-                this.model.customSceneChange(data)
-                console.log('custom scene change', data)
-            }
-        });
-        model.addEventListener(SCENE_INTERACTION.SET_LOCKED_ROOMS, (e) => {
-            const { lockedRooms } = this.model;
-            this.unlock();
-            if (!lockedRooms) return;
-            if (lockedRooms[this.targetRoomId]) {
-                this.lock();
-            }
-        }
-        );
-        model.addEventListener(SCENE_INTERACTION.SCENE_INITIALISED, (e) => {
-            ///test if has locked rooms
-            if (!e || !e.data || !e.data.payload) { return }
-            const {
-                data: { currentUsers: { lockedRooms } }
-            } = e;
-            if (!lockedRooms) {
-                return
-            }
-            this.unlock()
-            if (lockedRooms[this.targetRoomId]) {
-                this.lock();
-            }
-        });
+        // model.addEventListener(SCENE_INTERACTION.JUMP_TO_OBJECT, (e) => {
+        //     if (e.data.sceneId === this.targetRoomId) {
+        //         const data = {
+        //             element: this.mesh,
+        //             onComplete: e.data.onComplete ? e.data.onComplete : null,
+        //         };
+        //         this.model.customSceneChange(data)
+        //         console.log('custom scene change', data)
+        //     }
+        // });
+        // model.addEventListener(SCENE_INTERACTION.SET_LOCKED_ROOMS, (e) => {
+        //     const { lockedRooms } = this.model;
+        //     this.unlock();
+        //     if (!lockedRooms) return;
+        //     if (lockedRooms[this.targetRoomId]) {
+        //         this.lock();
+        //     }
+        // }
+        // );
+        // model.addEventListener(SCENE_INTERACTION.SCENE_INITIALISED, (e) => {
+        //     ///test if has locked rooms
+        //     if (!e || !e.data || !e.data.payload) { return }
+        //     const {
+        //         data: { currentUsers: { lockedRooms } }
+        //     } = e;
+        //     if (!lockedRooms) {
+        //         return
+        //     }
+        //     this.unlock()
+        //     if (lockedRooms[this.targetRoomId]) {
+        //         this.lock();
+        //     }
+        // });
         return this;
     }
 
@@ -93,7 +94,7 @@ class VRSceneChangeObject extends VRObject3D {
         this.locked = true;
         $(`.indicator-${this.mesh.id}`).addClass("isLocked");
     }
-    
+
     unlock() {
         $(`.indicator-${this.mesh.id}`).removeClass("isLocked");
         this.locakbleMesh.visible = false;

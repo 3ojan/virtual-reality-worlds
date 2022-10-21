@@ -26,20 +26,21 @@ class VRBaglessRoomObject extends VRObject3D {
     this.mesh.type = 'baglessRoom';
     this.mesh.name = 'baglessRoom';
     this.name = 'baglessRoom';
-    
+
     this.borderMesh = new Mesh(linkGeometry, borderMaterial);
     this.borderMesh.renderOrder = -1;
     this.borderMesh.type = 'baglessRoom';
-    !this.model.editMode && this.mesh.add(this.borderMesh);
-    
+    this.mesh.add(this.borderMesh);
+
     this.targetRoomName = '';
 
     // INIT
-    this.camera !== null ? this._setInitialPosRot() : this.setPosition(x, y, z);
+    // this.camera !== null ? this._setInitialPosRot() : this.setPosition(x, y, z);
+    this.setPosition(x, y, z);
 
     this.add(this.mesh);
 
-    this.mesh.groupDetails = {title: this.model.languageObject['bagless-room'].text, icon: 'share', editTitle: this.model.languageObject['edit-bagless-room'].text, dataLang: 'edit-bagless-room'}
+    // this.mesh.groupDetails = { title: this.model.languageObject['bagless-room'].text, icon: 'share', editTitle: this.model.languageObject['edit-bagless-room'].text, dataLang: 'edit-bagless-room' }
 
     this.editControls();
     this.settingsMesh && (this.settingsMesh.visible = false);
@@ -56,9 +57,9 @@ class VRBaglessRoomObject extends VRObject3D {
     return this.link;
   }
 
-  setDbConfig(config, forceUrl=false) {
+  setDbConfig(config, forceUrl = false) {
     super.setDbConfig(config);
-    
+
     if (!this.dbConfig.hasOwnProperty("image")) return;
     if (this.dbConfig.image.url === "") return;
     const { roomId } = this.dbConfig;
@@ -75,11 +76,11 @@ class VRBaglessRoomObject extends VRObject3D {
         });
       };
 
-      this.model.worldFetcher.getWorldDataFromId(Number(roomId), successCallback);
+      // this.model.worldFetcher.getWorldDataFromId(Number(roomId), successCallback);
     }
   }
 
-  setGeometry = (src, aspectRatio = 1, updateTexture = false)=>{
+  setGeometry = (src, aspectRatio = 1, updateTexture = false) => {
     if (src) {
       const max = 60;
       aspectRatio *= 1;
@@ -88,30 +89,30 @@ class VRBaglessRoomObject extends VRObject3D {
       let height = 1;
 
       if (aspectRatio < 0) {
-          // portrait
-          width = max * aspectRatio;
-          height = max;
+        // portrait
+        width = max * aspectRatio;
+        height = max;
       } else {
-          // landscape
-          width = max;
-          height = max / aspectRatio;
+        // landscape
+        width = max;
+        height = max / aspectRatio;
       }
 
       this.mesh.menuPosition.position.y = 0;
       this.mesh.menuPosition.translateY((height / 2 + 15) * -1);
 
       this.mesh.geometry = new PlaneGeometry(width, height);
-      
-      const borderGeometry = this.getBorder(width+4,height+4,2);
+
+      const borderGeometry = this.getBorder(width + 4, height + 4, 2);
       this.borderMesh.geometry = new BufferGeometry();
-      this.borderMesh.geometry.setAttribute( 'position', new BufferAttribute( new Float32Array( borderGeometry[0] ), 3 ) );
-      this.borderMesh.geometry.setAttribute( 'uv', new BufferAttribute( new Float32Array( borderGeometry[1] ), 2 ) );
+      this.borderMesh.geometry.setAttribute('position', new BufferAttribute(new Float32Array(borderGeometry[0]), 3));
+      this.borderMesh.geometry.setAttribute('uv', new BufferAttribute(new Float32Array(borderGeometry[1]), 2));
 
       this.mesh.material.needsUpdate = true;
 
       updateTexture && textureLoader.load(src, texture => {
-          this.mesh.material.map = texture;
-          this.mesh.material.needsUpdate = true;
+        this.mesh.material.map = texture;
+        this.mesh.material.needsUpdate = true;
       });
     }
   }

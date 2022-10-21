@@ -24,6 +24,8 @@ export default function SingleWorldScene() {
   const [worldData, setWorldData] = useState(null);
   const [dataToSave, setDataToSave] = useState(null);
 
+  const id = 15;
+
   const loadWorldDataFromId = (id) => {
     axios.post('/get/worlds/getWorldData', { worldId: id }).then((response) => {
       const json = JSON.parse(response.data.data);
@@ -32,13 +34,13 @@ export default function SingleWorldScene() {
   };
 
   const onUpdateWorldData = () => {
-    dispatch(saveWorldData(14, world.dataForSave, world.data))
+    dispatch(saveWorldData(id, world.dataForSave, world.data))
   }
 
   useEffect(() => {
     ///load world
     // loadWorldDataFromId(14);
-    dispatch(loadWorldData(14))
+    dispatch(loadWorldData(id))
   }, []);
 
   useEffect(() => {

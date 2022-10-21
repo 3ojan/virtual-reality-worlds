@@ -78,7 +78,9 @@ class VRChairObject extends VRProfileHelper {
     // this.isPublic = this.model.publicStage;
 
     this.add(this.mesh);
-    this.camera !== null ? this._setInitialPosRot() : this.setPosition(x, y, z);
+    // this.camera !== null ? this._setInitialPosRot() : this.setPosition(x, y, z);
+    this.setPosition(x, y, z);
+    console.log(x, y, z, this.mesh.name)
 
     // this.mesh.groupDetails = { title: this.model.languageObject['chair'].text, icon: 'chair', editTitle: this.model.languageObject['edit-chair'].text, dataLang: 'edit-chair' }
 

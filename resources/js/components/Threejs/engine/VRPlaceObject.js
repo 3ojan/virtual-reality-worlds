@@ -6,7 +6,7 @@ import { VRLinkObject } from './VRLinkObject';
 import { VRYoutubeGhostObject } from './VRYoutubeGhostObject';
 import { VRYoutubeVideoObject } from './VRYoutubeVideoObject';
 import { VRPayPalDonationObject } from './VRPayPalDonationObject';
-import VRChessObject from './VRChessObject';
+// import VRChessObject from './VRChessObject';
 import { VRBaglessRoomObject } from './VRBaglessRoomObject';
 import { VRShopObject } from './VRShopObject';
 import { VRInfoElement } from './VRInfoElement';
@@ -17,8 +17,7 @@ class VRPlaceObject {
 
     constructor(index, obj, texture, editMode = false, model) {
         let element = null;
-        const { id, type, name, x, y, z, scale } = obj;
-
+        const { id, uuid, type, name, x, y, z, scale } = obj;
         let _Z = z || 90;
 
         switch (type) {
@@ -55,7 +54,7 @@ class VRPlaceObject {
                 element = new VRProfileObject(index, null, texture, x, y, z, model);
                 break;
             case 'chessGame':
-                element = new VRChessObject(index, null, texture, x, y, z, model);
+                // element = new VRChessObject(index, null, texture, x, y, z, model);
                 break;
             case 'payPalDonation':
                 element = new VRPayPalDonationObject(index, null, texture, x, y, z, model);
@@ -70,8 +69,8 @@ class VRPlaceObject {
                 element = new VREmbeddedWebpageObject(index, null, texture, x, y, z, model);
                 break;
         }
-
-        element.setId(id);
+        const _id = id || uuid;
+        element.setId(_id);
         element.setDbConfig(obj);
         element.setInitRotations();
         element.mesh.scale.set(scale, scale, scale);

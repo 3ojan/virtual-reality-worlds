@@ -54,3 +54,37 @@ export const emptyTexture = textureLoader.load('public/image/textures/empty.png'
 export const infoTexture = textureLoader.load('public/image/textures/icons/info_element.png');
 
 export const borderMaterial = new MeshBasicMaterial({ side: DoubleSide, depthWrite: false, transparent: true, color: 0xffffff, opacity: 0.3 });
+
+export const getTexture = (type) => {
+    switch (type) {
+        case 'guestSeat':
+            return emptySeatTexture;
+        case 'profile':
+            console.log("defaultProfileTexture missing")
+            return screenShareTexture;
+        case 'sceneChange':
+            console.log("sceneChangeTexture missing")
+            return screenShareTexture;
+        case 'screenStream':
+            return screenShareTexture;
+        case 'webLink':
+            console.log("webLinkTexture missing")
+            return webLinkTexture;
+        case 'baglessRoom':
+            console.log("webLinkTexture missing")
+            return screenShareTexture;
+        case 'youtube':
+            return '';
+        case 'chessGame':
+            return chessTexture;
+        case 'payPalDonation':
+            return paypalDonateTexture;
+        case 'shopLink':
+            console.log("shopLink missing")
+            return infoTexture;
+        case 'infoElement':
+            return infoTexture;
+        case 'embeddedWebpage':
+            return infoTexture;
+    }
+}
