@@ -63,3 +63,54 @@ export const updateJSON = (obj, jsonObj = null, sceneObjects) => {
 export const cloneObject = (obj) => {
   return JSON.parse(JSON.stringify(obj));
 }
+
+export const getFov = (camera) => {
+  return Math.floor(
+    (2 *
+      Math.atan(camera.getFilmHeight() / 2 / camera.getFocalLength()) *
+      180) /
+    Math.PI
+  );
+};
+
+export const clickZoom = (value, zoomType) => {
+  if (value >= 20 && zoomType === "zoomIn") {
+    return value - 5;
+  } else if (value <= 75 && zoomType === "zoomOut") {
+    return value + 5;
+  } else {
+    return value;
+  }
+};
+
+export const zoomOutFunction = (camera) => {
+  const fov = getFov(camera);
+  camera.fov = clickZoom(fov, "zoomOut");
+  camera.updateProjectionMatrix();
+};
+
+export const zoomInFunction = (camera) => {
+  const fov = getFov(camera);
+  camera.fov = clickZoom(fov, "zoomIn");
+  camera.updateProjectionMatrix();
+};
+
+
+export const setHomeScene = (arr, sceneId) => {
+  const temp = arr[0];
+  arr[0] = arr[sceneId];
+  arr[sceneId] = temp;
+  return arr;
+}
+
+export const elementNames = (name) => {
+  switch (name) {
+    case "guestSeat":
+      return "Seats";
+    case "sceneChange":
+      return "Scene Change";
+    case "youtube":
+      return "Youtube";
+  }
+  return name;
+}

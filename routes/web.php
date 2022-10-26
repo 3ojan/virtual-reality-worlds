@@ -20,6 +20,9 @@ Route::get('/', function () {
 Auth::routes();
 
 /////test routes
+Route::get('/mode-edit-world', function () {
+   return view('mode-edit-world');
+});
 Route::get('/one-world', function () {
    return view('one-world');
 });

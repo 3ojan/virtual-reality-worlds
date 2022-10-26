@@ -30,11 +30,10 @@ class VRYoutubeVideoObject extends VRObject3D {
         })
 
         this.mesh = new Mesh(youtubePlaneGeometry, material);
-
         const object = new CSS3DObject(div);
         if (camera !== null) {
-            object.position.copy(this.camera.position);
-            object.rotation.copy(this.camera.rotation);
+            object.position.copy(camera.position);
+            object.rotation.copy(camera.rotation);
             object.translateZ(-540); // -900
         } else {
             object.position.copy(new Vector3(x, y, z));

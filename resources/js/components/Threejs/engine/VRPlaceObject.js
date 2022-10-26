@@ -15,7 +15,7 @@ import { VREmbeddedWebpageObject } from './VREmbeddedWebpageObject';
 
 class VRPlaceObject {
 
-    constructor(index, obj, texture, editMode = false, model) {
+    constructor(index, obj, texture, editMode = false, model, camera) {
         let element = null;
         const { id, uuid, type, name, x, y, z, scale } = obj;
         let _Z = z || 90;
@@ -44,7 +44,7 @@ class VRPlaceObject {
                     // VRYoutubeGhost - must be renamed to VRYoutubePlaceholder
                     element = new VRYoutubeGhostObject(index, null, obj.video_id, x, y, _Z, model);
                 } else {
-                    element = new VRYoutubeVideoObject(null, obj.video_id, x, y, _Z);
+                    element = new VRYoutubeVideoObject(camera, obj.video_id, x, y, _Z);
                     element.scale.set(scale, scale, scale);
                     element.mesh.dbConfig = obj;
                     return element;

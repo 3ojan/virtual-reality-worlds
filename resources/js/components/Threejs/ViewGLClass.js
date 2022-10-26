@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
+import { useSelector, connect } from 'react-redux';
 // import * as THREE from "three";
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
-import { TextureLoader, Color, WebGLRenderer, Group, Scene, Raycaster, PerspectiveCamera, SphereGeometry, MeshBasicMaterial, Mesh, PlaneGeometry, RepeatWrapping, Vector3, BackSide, LoadingManager, ShaderMaterial, Audio, AudioListener, AudioLoader, Object3D, BoxGeometry, Euler } from 'three';
+import { Box3, Clock, TextureLoader, Color, WebGLRenderer, Group, Scene, Raycaster, PerspectiveCamera, SphereGeometry, MeshBasicMaterial, Mesh, PlaneGeometry, RepeatWrapping, Vector3, BackSide, LoadingManager, ShaderMaterial, Audio, AudioListener, AudioLoader, Object3D, BoxGeometry, Euler } from 'three';
 import { VRProfileHelper } from './engine/VRProfileHelper';
 import { VRChairObject } from './engine/VRChairObject';
 import { VRPlaceObject } from './engine/VRPlaceObject';
 import { getStringifiedWorldData, updateJSON, _ray_tracing, cloneObject } from './engine/helpers/scene';
 import { getTexture } from './engine/helpers/texturesAndGeometries';
+import VRPlaneToSphere from './engine/VRPlaneToSphere';
 
-export default class ViewGLClass extends React.Component {
+class ViewGLClass extends React.Component {
 
   constructor(props) {
     super(props);
@@ -20,6 +22,7 @@ export default class ViewGLClass extends React.Component {
     this.myRef = React.createRef();
     this.css3DContainerRef = React.createRef();
     this.worldData = null;
+    console.log(props)
   }
 
   someFunction = () => {
@@ -30,7 +33,7 @@ export default class ViewGLClass extends React.Component {
     this.initWorld();
   }
   initWorld = () => {
-    const { scenes } = this.worldData;
+    const { scenes } = this.worldData.data;
     let currentScene = { ...scenes[2] };
 
     const updateSphereTexture = (newBgImage) => {
@@ -58,16 +61,22 @@ export default class ViewGLClass extends React.Component {
     scene.add(interactionGroup);
     const raycaster = new Raycaster();
     const camera = new PerspectiveCamera(70, 2, 0.001, 10000);
-    camera.position.set(0, 0, .0001);
+    camera.position.set(0, 0, 10);
     const initialCameraPosition = camera.quaternion.clone();
     camera.position.z = 10;
     const renderer = new WebGLRenderer({ antialias: true });
     const canvas = renderer.domElement;
+    let controlsActive = false;
     // const canvas = props.canvasRef;
     canvas.style.width = "100%";
     canvas.style.height = "100%";
 
+    let max = 1;
+    let min = -1;
+    let bendValue = 0;
+
     scene.add(mesh)
+    // mesh.visible = false;
     window.scene = scene;
 
     ///rednderer    
@@ -91,6 +100,9 @@ export default class ViewGLClass extends React.Component {
       return needResize;
     }
 
+    let clock = new Clock();
+    let planeToSphere;
+
     function render(time) {
       const fps = 1 / 60;
       time += fps;
@@ -103,13 +115,28 @@ export default class ViewGLClass extends React.Component {
       }
       controls && controls.update();
       requestAnimationFrame(render);
+
+      // if (planeToSphere) {
+      //   const t = Math.sin(clock.getElapsedTime());
+      //   planeToSphere.update(Math.sin(clock.getElapsedTime()) * 0.5 + 0.5)
+      //   if (t < -0.999) {
+      //     planeToSphere.spherePlane.visible = false;
+      //     mesh.visible = true;
+      //   }
+      // }
     };
 
-    requestAnimationFrame(render);
+
 
 
     ///Controls
     const controls = new OrbitControls(camera, this.css3DContainerRef.current);
+    controls.addEventListener('start', () => {
+      controlsActive = true;
+    });
+    controls.addEventListener('change', () => {
+      controlsActive = false;
+    });
     // controls.enabled = false;
     controls.enableDamping = true;
     controls.dampingFactor = this.isMobile ? 0.15 : 0.25;
@@ -126,13 +153,12 @@ export default class ViewGLClass extends React.Component {
           return
         const { id, x, y, z } = item;
         let obj;
-        obj = new VRPlaceObject(index, item, getTexture(item.type), null);
-        if (item.type === "youtube") {
-          interactionGroup.add(obj)
-        } else {
-          scene.add(obj);
-        }
+        obj = new VRPlaceObject(index, item, getTexture(item.type), null, null, camera);
+        scene.add(obj);
         obj.mesh.lookAt(camera.position);
+        if (item.type === "youtube") {
+          obj.lookAt(camera.position)
+        }
         obj.withStaticRotations && obj.setInitRotations(true);
         obj.setDistance && obj.setDistance(item.distance);
         obj.setPosition && obj.setPosition(x, y, z);
@@ -140,13 +166,23 @@ export default class ViewGLClass extends React.Component {
         // obj.setId(id);
         // obj.showOrUpdateMood(2)
       })
+
+      planeToSphere = new VRPlaneToSphere({ texture: getTexture("custom", currentScene.background.mediumPath) })
+      // scene.add(planeToSphere.spherePlane);
+      planeToSphere.spherePlane.position.z = -100;
+
+      var bbox = new Box3().setFromObject(planeToSphere.spherePlane);
+      // planeToSphere.spherePlane.position.x -= bbox.max.x / 2;
+      window.planeToSphere = planeToSphere;
+
     }
     _addElementsToScene(currentScene.objects);
+    requestAnimationFrame(render);
 
     // MOUSE MOVE EVENT
     document.addEventListener("mousemove", (event) => {
       // if (this.controlsActive) {
-      let intersect = _ray_tracing(event, scene.children, raycaster, camera, canvas);
+      let intersect = _ray_tracing(event, scene.children, raycaster, camera, this.css3DContainerRef.current);
 
       if (intersect.length) {
         const mesh = intersect[0].object;
@@ -164,10 +200,24 @@ export default class ViewGLClass extends React.Component {
       }
       // }
     });
+    function onDocumentMouseWheel(event) {
+      const fov = camera.fov + event.deltaY * 0.05;
+      // camera.fov = THREE.MathUtils.clamp(fov, 10, 75);
+      // camera.updateProjectionMatrix();
+      if (event.wheelDelta > 0) {
+        bendValue -= .045;
+        bendValue = (Math.max(bendValue, -1.5))
+      }
+      if (event.wheelDelta < 0) {
+        bendValue += .045;
+        bendValue = (Math.min(bendValue, 1.5))
+      }
+    };
+    document.addEventListener("wheel", onDocumentMouseWheel);
 
     const _editModeControls = () => {
       // DRAG OBJECTS
-      const dragControls = new DragControls(scene.children, camera, renderer.domElement);
+      const dragControls = new DragControls(scene.children, camera, this.css3DContainerRef.current);
       this.dragControls = dragControls;
 
       dragControls.addEventListener('dragstart', (event) => {
@@ -208,6 +258,61 @@ export default class ViewGLClass extends React.Component {
       });
     }
     _editModeControls();
+
+    this.css3DContainerRef.current.addEventListener("click", (event) => {
+
+      event.preventDefault();
+
+      if (controlsActive) {
+
+        let intersect = _ray_tracing(event, scene.children, raycaster, camera, canvas);
+
+        // $(".cta-menu").removeClass("is-active");
+        // this.model.lastScreenShareIClicked !== null && this.model.lastScreenShareIClicked.removeBorderHighlight();
+        // this.model.lastPeerChairIClicked !== null && this.model.lastPeerChairIClicked.removeBorderHighlight();
+
+        if (intersect.length === 0) {
+          this.model.resetPeerChairOptions();
+        } else {
+
+          if (intersect[0].object.visible) {
+
+            this.elementSelected = intersect[0].object;
+
+            // $("#elementSelected").val(this.elementSelected.id);
+
+
+            switch (this.elementSelected.type) {
+              case 'guestSeat': this._chairClickEvent(); break;
+              case 'screenStream':
+                this.model.lastScreenShareIClicked = this.elementSelected.parent;
+                this.sizes.width < this.mobileBreakpoint && this.elementSelected.parent.addBorderHighlight();
+                $("#screen-share-menu").addClass("is-active");
+                break;
+              case 'sceneChange': this._sceneChangeClickEvent(); break;
+              case 'webLink': this._linkClickEvent(); break;
+              case 'baglessRoom': this._linkClickEvent(true); break;
+              case 'profile': this._profileClickEvent(); break;
+              case 'userInfo': this._userInfoEvent(); break;
+              case 'chessGame': this._chessGameClickEvent(); break;
+              case 'chessAvatar': this._chessGameAvatarClickEvent(); break;
+              case 'payPalDonation': this._payPalDonationClickEvent(); break;
+              case 'shopLink': this._shopLinkClickEvent(); break;
+              case 'embeddedWebpage': this._embeddedWebpageClickEvent(); break;
+            }
+          } else {
+            // this.model.resetPeerChairOptions();
+
+            // if (intersect[0].object.type === 'sceneChangeDummy') {
+            //   this.elementSelected = intersect[0].object.parent;
+            //   $("#elementSelected").val(this.elementSelected.id);
+            //   this._sceneChangeClickEvent();
+            // }
+          }
+        }
+      }
+
+    });
   }
 
   componentDidMount() {
@@ -218,12 +323,42 @@ export default class ViewGLClass extends React.Component {
 
   render() {
     return (
-      <div>
-        <div className="" ref={this.css3DContainerRef} />
-        <div style={{ width: "100%", height: "100%" }}>
-          <div className="" ref={this.myRef} />
-        </div>
-      </div >
+      <div style={container}>
+        <div style={container}>
+          <div style={webGlStyle} ref={this.myRef} />
+          <div style={css3dStyle} ref={this.css3DContainerRef} />
+        </div >
+      </div>
     )
   }
+}
+
+const mapStateToProps = state => ({
+  world: state.world
+});
+
+const mapDispatchToProps = () => ({
+
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps()
+)(ViewGLClass);
+
+
+const webGlStyle = {
+  width: "100%",
+  height: "100%",
+  position: "absolute",
+  top: 0,
+  left: 0,
+}
+const css3dStyle = {
+  zIndex: 9,
+}
+const container = {
+  width: "100%",
+  height: "100%",
+  position: "relative",
 }

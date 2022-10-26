@@ -28,6 +28,9 @@
                         <li>
                             <a href="/one-world">one World app</a>
                         </li>
+                        <li>
+                            <a href="/mode-edit-world">Edit mpde</a>
+                        </li>
                     </ul>
                 </div>
             </div>

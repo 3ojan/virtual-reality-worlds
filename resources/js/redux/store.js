@@ -5,6 +5,7 @@ import sphere from './user/sphere';
 import world from './world/world';
 import chat from './chat/chat';
 import socketRedux from './chat/socketRedux';
+import roomSettings from './editMode/roomSettings';
 
 const reducer = combineReducers({
   user,
@@ -12,6 +13,7 @@ const reducer = combineReducers({
   world,
   chat,
   socketRedux,
+  roomSettings,
 })
 const store = configureStore({
   reducer,

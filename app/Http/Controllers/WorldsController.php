@@ -111,7 +111,7 @@ class WorldsController extends Controller
             $id = $request->get("worldId");
             $sourceWorld = Worlds::findOrFail($id); 
             return response()->json([
-                "data"=>$sourceWorld->data
+                $sourceWorld
            ]);
         }
         catch(Exception $e)

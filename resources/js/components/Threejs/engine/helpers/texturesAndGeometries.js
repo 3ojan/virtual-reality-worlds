@@ -55,7 +55,7 @@ export const infoTexture = textureLoader.load('public/image/textures/icons/info_
 
 export const borderMaterial = new MeshBasicMaterial({ side: DoubleSide, depthWrite: false, transparent: true, color: 0xffffff, opacity: 0.3 });
 
-export const getTexture = (type) => {
+export const getTexture = (type, url) => {
     switch (type) {
         case 'guestSeat':
             return emptySeatTexture;
@@ -86,5 +86,7 @@ export const getTexture = (type) => {
             return infoTexture;
         case 'embeddedWebpage':
             return infoTexture;
+        case 'custom':
+            return textureLoader.load(url);;
     }
 }

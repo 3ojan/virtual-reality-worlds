@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-                    <div id="one-world">
-                    </div>
+    <div id="one-world">
+    </div>
 </div>
 @endsection

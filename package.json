@@ -29,6 +29,7 @@
     "dependencies": {
         "@chrisoakman/chessboardjs": "^1.0.0",
         "@reduxjs/toolkit": "^1.8.6",
+        "bootstrap-icons": "^1.9.1",
         "chess": "^1.1.0",
         "chessboardjs": "0.0.1",
         "gsap": "^3.11.3",
